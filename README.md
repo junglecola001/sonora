@@ -1,6 +1,6 @@
 # Sonora · 网易云音乐播放器
 
-Sonora 是网易云音乐播放器项目，前后端同仓开发。当前仓库根目录是**后端音源服务**，用 **Node.js + Express 5 + NeteaseCloudMusicApi** 实现，单账号、无数据库；播放器前端以同仓子目录加入。后端可以直接启动为独立服务，也可以嵌入其他 Node.js 进程。
+Sonora 是网易云音乐播放器项目，前后端同仓开发。当前仓库根目录是**后端音源服务**，用 **Node.js + Express 5 + NeteaseCloudMusicApi** 实现，单账号、无数据库；播放器客户端是 `app/` 下的 Flutter Windows 应用（prism_ui），正在开发中。后端可以直接启动为独立服务，也可以嵌入其他 Node.js 进程。
 
 账号登录、曲库查询、播放地址解析（音源）、歌词、媒体代理等能力全部通过 `/api/v1` 暴露；前端负责界面、播放器和队列，按 [docs/API.md](docs/API.md) 接入即可。
 
@@ -125,7 +125,7 @@ curl -X POST http://127.0.0.1:3000/api/v1/media/tickets \
 
 ## 项目结构
 
-当前树是后端音源服务，位于仓库根目录；播放器前端加入后放在同仓子目录（如 `web/`），后端路径与接口不变。
+当前树是后端音源服务，位于仓库根目录；播放器客户端在 `app/`（Flutter Windows + prism_ui），后端路径与接口不变。开发规范见 [AGENTS.md](AGENTS.md)，排期见 [PLAN.md](PLAN.md)。
 
 ```text
 sonora/
@@ -267,7 +267,7 @@ CORS_ORIGINS=https://your-client.example
 
 **前端在哪里？**
 
-前端和本服务同仓开发，会作为仓库内的子目录（如 `web/`）加入，直接调用这里的 `/api/v1`。当前根目录只有后端，可先用 `examples/client.mjs` 验证接口，再按 [docs/API.md](docs/API.md) 接入界面与播放器。
+客户端和本服务同仓开发，位于 `app/`（Flutter Windows，UI 使用 prism_ui），直接调用这里的 `/api/v1`。当前根目录只有后端，可先用 `examples/client.mjs` 验证接口，再按 [docs/API.md](docs/API.md) 接入界面与播放器；开发规范与排期见 [AGENTS.md](AGENTS.md) 与 [PLAN.md](PLAN.md)。
 
 ## 使用边界
 
@@ -279,6 +279,8 @@ Cookie 是账号凭据，保存在本地受保护文件中；Windows 部署需�
 
 ## 更多文档
 
+- [开发规范](AGENTS.md)
+- [开发计划与里程碑](PLAN.md)
 - [API 使用说明](docs/API.md)
 - [OpenAPI 文件](docs/openapi.json)
 - [验证记录与已知边界](docs/VERIFICATION.md)
