@@ -13,6 +13,15 @@ flutter test
 
 需要 Flutter 3.47+、Visual Studio 2022「使用 C++ 的桌面开发」。原生库（window_manager、media_kit、SMTC）依赖该工具链，未安装时只能跑 `flutter analyze` 与 `flutter test`。
 
+本机没有 Visual Studio 时用 GitHub Actions 出包（`.github/workflows/windows.yml`）：
+
+```powershell
+gh workflow run windows.yml
+gh run watch
+```
+
+产物为 `sonora-windows-x64` artifact：`Sonora-<版本>-x64-setup.exe`（Inno Setup）与 `Sonora-<版本>-x64-portable.zip`；推 `v*` tag 时自动挂到 Release。安装包未签名。
+
 ## 当前状态（M0）
 
 - 自绘外壳：标题栏、272px 资料库侧栏、主区页面、88px 播放栏骨架。
