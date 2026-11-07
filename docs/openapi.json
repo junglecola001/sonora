@@ -1,0 +1,3324 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "网易云音乐音源 API 后端",
+    "version": "1.0.0",
+    "description": "自用／单账号网易云音乐 API 服务，不包含前端页面。Bearer 鉴权仅在配置 API_TOKEN 后启用。健康检查和持票据媒体请求无需 Bearer。第三方权限由网易云决定。"
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "operationId": "get__health",
+        "summary": "进程健康检查（不代表上游在线）",
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "type": "object"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/capabilities": {
+      "get": {
+        "operationId": "get__capabilities",
+        "summary": "接口能力与使用边界",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "type": "object"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/search": {
+      "get": {
+        "operationId": "get__search",
+        "summary": "搜索歌曲",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "keywords",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000,
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Page"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/songs": {
+      "get": {
+        "operationId": "get__songs",
+        "summary": "按输入顺序获取批量歌曲详情",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ids",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "逗号分隔的 1..100 个歌曲 ID"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "type": "object"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/songs/{id}": {
+      "get": {
+        "operationId": "get__songs_id",
+        "summary": "歌曲详情",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Song"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/songs/{id}/playback": {
+      "get": {
+        "operationId": "get__songs_id_playback",
+        "summary": "解析播放地址和试听状态",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          },
+          {
+            "name": "quality",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "standard",
+                "exhigh",
+                "lossless",
+                "hires",
+                "jymaster"
+              ],
+              "default": "hires"
+            }
+          },
+          {
+            "name": "allowMatch",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Playback"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/songs/{id}/lyrics": {
+      "get": {
+        "operationId": "get__songs_id_lyrics",
+        "summary": "歌词及时间轴",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Lyrics"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/songs/{id}/comments": {
+      "get": {
+        "operationId": "get__songs_id_comments",
+        "summary": "歌曲评论分页",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000,
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Page"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "post__songs_id_comments",
+        "summary": "发表歌曲评论",
+        "description": "需要本服务保存的有效网易云账号登录状态。",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  }
+                },
+                "required": [
+                  "content"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "type": "object"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/playlists/{id}": {
+      "get": {
+        "operationId": "get__playlists_id",
+        "summary": "歌单元数据",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Playlist"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/playlists/{id}/tracks": {
+      "get": {
+        "operationId": "get__playlists_id_tracks",
+        "summary": "歌单曲目分页（保持索引顺序）",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000,
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Page"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "post__playlists_id_tracks",
+        "summary": "向歌单添加歌曲",
+        "description": "需要本服务保存的有效网易云账号登录状态。",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ids": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 100,
+                    "items": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]*$",
+                      "maxLength": 20
+                    }
+                  }
+                },
+                "required": [
+                  "ids"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "type": "object"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "delete__playlists_id_tracks",
+        "summary": "从歌单移除歌曲",
+        "description": "需要本服务保存的有效网易云账号登录状态。",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ids": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 100,
+                    "items": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]*$",
+                      "maxLength": 20
+                    }
+                  }
+                },
+                "required": [
+                  "ids"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "type": "object"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/albums/{id}": {
+      "get": {
+        "operationId": "get__albums_id",
+        "summary": "专辑详情和歌曲",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "type": "object"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/artists/{id}": {
+      "get": {
+        "operationId": "get__artists_id",
+        "summary": "歌手详情和热门歌曲分页",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000,
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Page"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/recommendations/playlists": {
+      "get": {
+        "operationId": "get__recommendations_playlists",
+        "summary": "推荐歌单",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "type": "object"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/recommendations/daily": {
+      "get": {
+        "operationId": "get__recommendations_daily",
+        "summary": "已登录账号每日推荐歌曲",
+        "description": "需要本服务保存的有效网易云账号登录状态。",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "type": "object"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/recommendations/personal-playlists": {
+      "get": {
+        "operationId": "get__recommendations_personal_playlists",
+        "summary": "已登录账号私人推荐歌单",
+        "description": "需要本服务保存的有效网易云账号登录状态。",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/PlaylistList"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/status": {
+      "get": {
+        "operationId": "get__auth_status",
+        "summary": "已验证的账号状态（会员权限未知时不猜测）",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Account"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/membership": {
+      "get": {
+        "operationId": "get__auth_membership",
+        "summary": "查询当前账号 VIP／SVIP 状态与到期时间",
+        "description": "需要本服务保存的有效网易云账号登录状态。",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Membership"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/cookie": {
+      "post": {
+        "operationId": "post__auth_cookie",
+        "summary": "验证并保存 Cookie",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "cookie": {
+                    "oneOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "object"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "object"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "cookie"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Account"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "operationId": "post__auth_logout",
+        "summary": "删除本服务的登录凭据",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "type": "object"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/qr": {
+      "post": {
+        "operationId": "post__auth_qr",
+        "summary": "创建扫码登录会话",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "type": "object"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/qr/{sessionId}": {
+      "get": {
+        "operationId": "get__auth_qr_sessionId",
+        "summary": "轮询二维码状态（至少间隔 2 秒）",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "type": "object"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/playlists": {
+      "get": {
+        "operationId": "get__me_playlists",
+        "summary": "我的歌单分页",
+        "description": "需要本服务保存的有效网易云账号登录状态。",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000,
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Page"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/likes": {
+      "get": {
+        "operationId": "get__me_likes",
+        "summary": "我喜欢的歌曲 ID",
+        "description": "需要本服务保存的有效网易云账号登录状态。",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "type": "object"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/collections/albums/status": {
+      "get": {
+        "operationId": "get__me_collections_albums_status",
+        "summary": "批量查询专辑收藏状态（未扫描到的项可能为未知）",
+        "description": "需要本服务保存的有效网易云账号登录状态。",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ids",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "逗号分隔的 1..100 个专辑 ID"
+            }
+          },
+          {
+            "name": "maxPages",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 20,
+              "default": 8
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/AlbumCollectionStatus"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/likes/{id}": {
+      "put": {
+        "operationId": "put__me_likes_id",
+        "summary": "喜欢或取消喜欢歌曲",
+        "description": "需要本服务保存的有效网易云账号登录状态。",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "liked": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "liked"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "type": "object"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/playlists": {
+      "post": {
+        "operationId": "post__playlists",
+        "summary": "创建歌单",
+        "description": "需要本服务保存的有效网易云账号登录状态。",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 40
+                  },
+                  "private": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Playlist"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/collections/playlists/{id}": {
+      "put": {
+        "operationId": "put__me_collections_playlists_id",
+        "summary": "收藏或取消收藏",
+        "description": "需要本服务保存的有效网易云账号登录状态。",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "collected": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "collected"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "type": "object"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/collections/albums/{id}": {
+      "put": {
+        "operationId": "put__me_collections_albums_id",
+        "summary": "收藏或取消收藏",
+        "description": "需要本服务保存的有效网易云账号登录状态。",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "collected": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "collected"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "type": "object"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/songs/{id}/comments/{commentId}/like": {
+      "put": {
+        "operationId": "put__songs_id_comments_commentId_like",
+        "summary": "点赞或取消点赞评论",
+        "description": "需要本服务保存的有效网易云账号登录状态。",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          },
+          {
+            "name": "commentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "liked": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "liked"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "type": "object"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/listen": {
+      "post": {
+        "operationId": "post__listen",
+        "summary": "上报真实听歌记录（不保证账户时长累计）",
+        "description": "需要本服务保存的有效网易云账号登录状态。",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^[1-9][0-9]*$",
+                    "maxLength": 20
+                  },
+                  "sourceId": {
+                    "type": "string",
+                    "pattern": "^(0|[1-9][0-9]*)$"
+                  },
+                  "seconds": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 86400
+                  }
+                },
+                "required": [
+                  "id",
+                  "seconds"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "type": "object"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/podcasts/search": {
+      "get": {
+        "operationId": "get__podcasts_search",
+        "summary": "搜索播客",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "keywords",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000,
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Page"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/podcasts/hot": {
+      "get": {
+        "operationId": "get__podcasts_hot",
+        "summary": "热门播客分页",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000,
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Page"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/podcasts/{id}": {
+      "get": {
+        "operationId": "get__podcasts_id",
+        "summary": "播客详情",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "type": "object"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/podcasts/{id}/programs": {
+      "get": {
+        "operationId": "get__podcasts_id_programs",
+        "summary": "播客节目分页（mainSong.id 用于播放）",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000,
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Page"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/media/tickets": {
+      "post": {
+        "operationId": "post__media_tickets",
+        "summary": "签发网易云 CDN 封面或音频票据",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 8000
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "audio",
+                      "cover"
+                    ],
+                    "default": "cover"
+                  }
+                },
+                "required": [
+                  "url"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "data",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "success": {
+                      "const": true
+                    },
+                    "data": {
+                      "type": "object"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/media/audio": {
+      "get": {
+        "operationId": "get__media_audio",
+        "summary": "使用媒体票据代理（支持单 Range）",
+        "security": [],
+        "parameters": [
+          {
+            "name": "ticket",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Range",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "bytes=0-8191"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "媒体数据",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "206": {
+            "description": "媒体数据",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "416": {
+            "description": "Range 无效或越界"
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "head": {
+        "operationId": "head__media_audio",
+        "summary": "使用媒体票据代理（支持单 Range）",
+        "security": [],
+        "parameters": [
+          {
+            "name": "ticket",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Range",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "bytes=0-8191"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "媒体数据",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "206": {
+            "description": "媒体数据",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "416": {
+            "description": "Range 无效或越界"
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/media/cover": {
+      "get": {
+        "operationId": "get__media_cover",
+        "summary": "使用媒体票据代理（支持单 Range）",
+        "security": [],
+        "parameters": [
+          {
+            "name": "ticket",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Range",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "bytes=0-8191"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "媒体数据",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "206": {
+            "description": "媒体数据",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "416": {
+            "description": "Range 无效或越界"
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "head": {
+        "operationId": "head__media_cover",
+        "summary": "使用媒体票据代理（支持单 Range）",
+        "security": [],
+        "parameters": [
+          {
+            "name": "ticket",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Range",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "bytes=0-8191"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "媒体数据",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "206": {
+            "description": "媒体数据",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "416": {
+            "description": "Range 无效或越界"
+          },
+          "default": {
+            "description": "错误；具体 HTTP 状态和 error.code 见 API.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/openapi.json": {
+      "get": {
+        "summary": "本接口文档",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OpenAPI 3.1 JSON"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "required": [
+          "success",
+          "error",
+          "requestId"
+        ],
+        "properties": {
+          "success": {
+            "const": false
+          },
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "details": {
+                "type": "object"
+              }
+            }
+          },
+          "requestId": {
+            "type": "string"
+          }
+        }
+      },
+      "Song": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "const": "netease"
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "artist": {
+            "type": "string"
+          },
+          "artists": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "album": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "cover": {
+                "type": "string"
+              }
+            }
+          },
+          "cover": {
+            "type": "string"
+          },
+          "durationMs": {
+            "type": "number"
+          },
+          "fee": {
+            "type": "number"
+          },
+          "popularity": {
+            "type": "number"
+          }
+        }
+      },
+      "Playlist": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "const": "netease"
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "cover": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "trackCount": {
+            "type": "number"
+          },
+          "playCount": {
+            "type": "number"
+          },
+          "creator": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          },
+          "subscribed": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Page": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "total": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "offset": {
+            "type": "integer"
+          },
+          "nextOffset": {
+            "type": "integer"
+          },
+          "hasMore": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Playback": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "requestedId": {
+            "type": "string"
+          },
+          "resolvedId": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "full",
+              "trial",
+              "unavailable"
+            ]
+          },
+          "playable": {
+            "type": "boolean"
+          },
+          "trial": {
+            "type": "boolean"
+          },
+          "url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "proxyUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "requestedQuality": {
+            "type": "string"
+          },
+          "quality": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "bitrate": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "format": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "size": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "expiresAt": {
+            "type": "number"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "matched": {
+            "type": "boolean"
+          },
+          "restriction": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "action": {
+                "type": "string"
+              }
+            }
+          },
+          "trialInfo": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "matchedSong": {
+            "$ref": "#/components/schemas/Song"
+          },
+          "matchBasis": {
+            "type": "string"
+          },
+          "originalRestriction": {
+            "type": [
+              "object",
+              "null"
+            ]
+          }
+        }
+      },
+      "Lyrics": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "original": {
+            "type": "string"
+          },
+          "translated": {
+            "type": "string"
+          },
+          "romanized": {
+            "type": "string"
+          },
+          "wordByWord": {
+            "type": "string"
+          },
+          "lines": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "timeMs": {
+                  "type": "number"
+                },
+                "text": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "instrumental": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Membership": {
+        "type": "object",
+        "properties": {
+          "membership": {
+            "enum": [
+              "vip",
+              "svip",
+              "none",
+              "unknown"
+            ]
+          },
+          "isVip": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "isSvip": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "expiresAt": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "checkedAt": {
+            "type": "number"
+          },
+          "source": {
+            "enum": [
+              "vip_info_v2",
+              "vip_info",
+              null
+            ]
+          },
+          "errorCode": {
+            "type": "string"
+          }
+        }
+      },
+      "Account": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Membership"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "loggedIn": {
+                "type": "boolean"
+              },
+              "hasCookie": {
+                "type": "boolean"
+              },
+              "userId": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "nickname": {
+                "type": "string"
+              },
+              "avatar": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "PlaylistList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Playlist"
+            }
+          }
+        }
+      },
+      "AlbumCollectionStatus": {
+        "type": "object",
+        "properties": {
+          "ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "collected": {
+            "type": "object",
+            "additionalProperties": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            }
+          },
+          "complete": {
+            "type": "boolean"
+          },
+          "scanned": {
+            "type": "integer"
+          },
+          "nextOffset": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}
