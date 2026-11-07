@@ -1,8 +1,8 @@
-# Sonora Backend · 网易云音乐音源 API
+# Sonora · 网易云音乐播放器
 
-单账号、无数据库的网易云音乐音源服务，用 **Node.js + Express 5 + NeteaseCloudMusicApi** 实现。本仓库**只包含后端 HTTP API，不包含任何前端页面**，可以直接启动为独立服务，也可以嵌入其他项目的 Node.js 进程，供 Web、桌面、移动或命令行客户端调用。
+Sonora 是网易云音乐播放器项目，前后端同仓开发。当前仓库根目录是**后端音源服务**，用 **Node.js + Express 5 + NeteaseCloudMusicApi** 实现，单账号、无数据库；播放器前端以同仓子目录加入。后端可以直接启动为独立服务，也可以嵌入其他 Node.js 进程。
 
-账号登录、曲库查询、播放地址解析（音源）、歌词、媒体代理等能力全部通过 `/api/v1` 暴露；客户端负责界面、播放器和队列。前端相关代码（React + Vite 播放器）已从仓库移除，迁移到其他项目时直接调用这里的 API。
+账号登录、曲库查询、播放地址解析（音源）、歌词、媒体代理等能力全部通过 `/api/v1` 暴露；前端负责界面、播放器和队列，按 [docs/API.md](docs/API.md) 接入即可。
 
 ## 能力
 
@@ -125,8 +125,10 @@ curl -X POST http://127.0.0.1:3000/api/v1/media/tickets \
 
 ## 项目结构
 
+当前树是后端音源服务，位于仓库根目录；播放器前端加入后放在同仓子目录（如 `web/`），后端路径与接口不变。
+
 ```text
-music-player/
+sonora/
 ├── server.js                 服务启动与优雅退出
 ├── src/
 │   ├── app.js                Express 应用工厂与依赖注入
@@ -230,7 +232,7 @@ npm run verify:live
 
 ## Docker 部署
 
-Dockerfile 只打包后端，不包含前端。
+Dockerfile 只打包后端音源服务，不包含前端工程。
 
 ```bash
 docker build -t sonora-backend .
@@ -263,9 +265,9 @@ CORS_ORIGINS=https://your-client.example
 
 先检查后端健康接口与 Token，再核对 `CORS_ORIGINS` 是否包含浏览器当前完整 Origin（协议、域名和端口）；HTTPS 页面不能请求 HTTP 接口。服务端对已签票媒体的 GET／HEAD 不要求 Bearer，因此 `<audio>`／`<img>` 可以直接使用 `proxyUrl`。
 
-**仓库里为什么没有前端？**
+**前端在哪里？**
 
-这个仓库被裁剪为纯 API 后端：`web/` 前端工程已移除，播放器界面、队列、歌词滚动等交互由调用方项目实现。可先用 `examples/client.mjs` 验证接口，再在目标项目中按 [docs/API.md](docs/API.md) 接入。
+前端和本服务同仓开发，会作为仓库内的子目录（如 `web/`）加入，直接调用这里的 `/api/v1`。当前根目录只有后端，可先用 `examples/client.mjs` 验证接口，再按 [docs/API.md](docs/API.md) 接入界面与播放器。
 
 ## 使用边界
 

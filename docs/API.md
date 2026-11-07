@@ -1,6 +1,6 @@
 # API 参考
 
-Base URL：`http://127.0.0.1:3000/api/v1`。本服务只提供 HTTP API，仓库不包含前端页面；以下接口适用于任意 Web、桌面、移动或命令行客户端。可直接运行 [examples/client.mjs](../examples/client.mjs) 验证搜索、音源、歌词与封面链路。
+Base URL：`http://127.0.0.1:3000/api/v1`。本服务只提供 HTTP API，前端界面由同仓客户端工程实现；以下接口适用于任意 Web、桌面、移动或命令行客户端。可直接运行 [examples/client.mjs](../examples/client.mjs) 验证搜索、音源、歌词与封面链路。
 
 所有 JSON 成功响应：
 

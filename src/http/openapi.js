@@ -59,7 +59,7 @@ function openapi(routes) {
   }
   paths['/api/v1/openapi.json'] = { get: { summary: '本接口文档', security: [{ bearerAuth: [] }], responses: { 200: { description: 'OpenAPI 3.1 JSON' } } } };
   return { openapi: '3.1.0', info: { title: '网易云音乐音源 API 后端', version: '1.0.0',
-    description: '自用／单账号网易云音乐 API 服务，不包含前端页面。Bearer 鉴权仅在配置 API_TOKEN 后启用。健康检查和持票据媒体请求无需 Bearer。第三方权限由网易云决定。' },
+    description: '自用／单账号网易云音乐音源 API，供播放器前端接入。Bearer 鉴权仅在配置 API_TOKEN 后启用。健康检查和持票据媒体请求无需 Bearer。第三方权限由网易云决定。' },
     servers: [{ url: '/' }], paths, components: { schemas, securitySchemes: { bearerAuth: { type: 'http', scheme: 'bearer' } } } };
 }
 
