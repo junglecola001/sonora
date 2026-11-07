@@ -64,7 +64,8 @@ sonora/
 | 客户端安装 | `cd app && flutter pub get` |
 | 客户端运行 | `flutter run -d windows` |
 | 客户端检查/测试 | `flutter analyze`、`flutter test` |
-| 客户端发布构建 | `flutter build windows --release` |
+| 客户端发布构建 | `flutter build windows --release`（本机无 VS 时走 CI） |
+| CI 出包 | `gh workflow run windows.yml`，产物 `sonora-windows-x64` |
 
 提交前最低要求：改后端 → `npm test` + `npm run check`；改接口 → `npm run docs` 并提交生成结果；改前端 → `flutter analyze` + `flutter test`。
 

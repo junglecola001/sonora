@@ -55,6 +55,19 @@ curl http://127.0.0.1:3000/api/v1/capabilities
 
 完整接口说明见 [docs/API.md](docs/API.md)；机器可读定义见 [docs/openapi.json](docs/openapi.json) 或运行时 `GET /api/v1/openapi.json`。
 
+## 客户端构建
+
+Windows 客户端安装包由 [GitHub Actions](.github/workflows/windows.yml) 构建：
+
+- 推送 `main`：自动跑 `flutter analyze`、`flutter test`、`flutter build windows --release`，产出 artifact `sonora-windows-x64`（Inno Setup 安装包 + 便携 zip）。
+- 推送 `v*` tag：同样构建并自动挂到 GitHub Release。
+- 本地没有 Visual Studio C++ 时也能出包；安装包未签名，Windows 会提示 SmartScreen。
+
+```bash
+gh workflow run windows.yml
+gh run watch
+```
+
 ## 接入流程（登录 → 音源 → 歌词）
 
 所有 JSON 成功响应统一为 `{ "success": true, "data": ..., "requestId": "uuid" }`，失败为 `{ "success": false, "error": { "code", "message" }, "requestId": "uuid" }`。

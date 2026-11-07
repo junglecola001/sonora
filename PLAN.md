@@ -174,7 +174,8 @@ flowchart LR
 
 ### M6 发布
 
-- MSIX 或 Inno Setup（实测二选一）+ 便携 zip；版本号与关于页；崩溃日志落本地。
+- 发布形态已定：Inno Setup 安装包 + 便携 zip，由 GitHub Actions 在 `windows-latest` 构建（`.github/workflows/windows.yml`）；tag `v*` 自动挂 Release。MSIX 暂不做（需证书与商店身份）。
+- 版本号与关于页；崩溃日志落本地。首版只出 x64（ARM64 设备以 x64 模拟运行），Arm64 构建在 M6 后评估。
 - GPL-3.0 合规：LICENSE、发布附源码包、NOTICE 汇总。
 - **验收**：干净 Win10 与 Win11 VM：安装 → 播放本地 + 在线 → 桌面歌词 → 卸载；无残留。
 
