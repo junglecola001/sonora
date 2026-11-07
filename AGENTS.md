@@ -31,6 +31,7 @@
 | 构建环境 | Windows 10 1903+ x64，Visual Studio 2022「使用 C++ 的桌面开发」 | — |
 
 - 升级依赖单独提交，写明动机与影响面；prism_ui 每次升级都要人工回归受影响页面。
+- `window_manager 0.6` 依赖 nativeapi 原生资产，构建与测试都需要 MSVC；Visual Studio 安装前不加入依赖（见 PLAN M0）。客户端当前只能用 `flutter analyze` 与 `flutter test` 验证。
 - **许可证**：prism_ui 是 GPL-3.0。客户端链接它后整体按 GPL-3.0 分发，发布二进制必须同时提供完整对应源码。后端是独立进程、通过 HTTP 通信，可单独授权。仓库 LICENSE 方案未定（见 PLAN §11），发布前必须落地。
 - 不引入 Material/Cupertino 适配层，也不为 prism_ui 写"通用兜底组件库"；缺什么就在 `lib/ui/` 里做一个明确的组件。
 
@@ -99,7 +100,7 @@ app/lib/
 
 - 只用 prism_ui：不 import `material.dart` / `cupertino.dart`，基础件用 `widgets.dart`；命名冲突用 `hide` 或前缀。
 - 颜色、圆角、字重、动效时长全部来自 `ColorScheme`/主题或 `ui/` token；禁止散落 `Color(0xFF…)` 与 `Duration(...)` 字面量。
-- 布局遵循 Salt Player 的信息层级：左侧固定 `NavigationSidebar` + 主区大标题/操作行 + 56px 行高虚拟化列表 + 底部 `LiquidGlass` 播放栏 + 播放页（模糊封面背景 + 歌词列）。区域与组件映射见 PLAN §6。
+- 布局遵循 Salt Player 的信息层级：左侧固定 `NavigationSidebar` + 主区大标题/操作行 + 72px 行高虚拟化列表 + 底部 `LiquidGlass` 播放栏 + 播放页（模糊封面背景 + 歌词列）。区域与组件映射、取色与尺寸见 PLAN §6 与 [docs/reference/README.md](docs/reference/README.md)。
 - 桌面优先：hover/pressed/focus 三态齐全；右键菜单；Tab 顺序与焦点环；Esc 返回；空格播放/暂停；方向键切歌与音量。快捷键集中定义在 `core/platform`。
 - 文案进 `lib/l10n`（ARB），widget 内不硬编码；首发中文，英文补键同步。
 

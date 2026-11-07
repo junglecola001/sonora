@@ -12,9 +12,9 @@
 | 部分 | 状态 |
 | --- | --- |
 | 后端 | 可用：`/api/v1` 38 条路由，46 项测试通过；单账号凭据、票据媒体代理、质量回退、OpenAPI |
-| 客户端 | 未开始：无 `app/`，开发机未安装 Flutter |
+| 客户端 | M0 骨架已建：`app/` Flutter 3.47.9 + prism_ui 0.1.2，外壳渲染通过（`flutter analyze` 无问题，2 项 widget 测试通过）；尚未安装 Visual Studio C++ 工具链，`flutter run` / `flutter build windows` 待解锁 |
 | 仓库 | `junglecola001/sonora`，public，前后端同仓 |
-| 环境 | Windows 11 ARM64 主机；后端 Node 24.19 可用；Flutter/VS2022 待装 |
+| 环境 | Windows 11 ARM64 主机；Node 24.19、Flutter 3.47.9（ARM64 内核快照）可用；Visual Studio C++ 待装 |
 
 ## 3. 范围
 
@@ -104,7 +104,7 @@ flowchart LR
 | 弹层 | `Dialog`、`ContextMenu`、`Banner` |
 | 空状态 | `NullStatus` |
 
-尺寸与排版：默认 1280×800，最小 960×640；标题 28/24，列表主文本 15，次文本 12，行高 56；圆角走 superellipse；页面转场 250ms；遵循系统「减少动画」。主题默认深色，种子色可选，`vivid`/`tinted`/`soft`/`monochrome` 四风格；字体可替换；模糊层级 ≤2 层以保护性能。
+尺寸与排版：默认 1280×800，最小 960×640；侧栏 272，播放栏 88，列表行高 72（紧凑 64）；标题 28/24，列表主文本 15，次文本 12；圆角走 superellipse；页面转场 250ms；遵循系统「减少动画」。主题默认深色，种子色可选，`vivid`/`tinted`/`soft`/`monochrome` 四风格；字体可替换；模糊层级 ≤2 层以保护性能。参考截图、取色与尺寸测量见 [docs/reference/README.md](docs/reference/README.md)。
 
 ## 7. 数据设计
 
@@ -118,6 +118,18 @@ flowchart LR
 依赖顺序：M0 → M1 → M2 →（M3、M4 可并行）→ M5 → M6。M1 风险最高，先做实证再铺 UI。
 
 ### M0 工程骨架（0.5–1 天）
+
+状态：**部分完成**。
+
+- [x] Flutter 3.47.9 SDK（本机 ARM64：官方 x64 分发无法跑项目命令，已用 ARM64 Dart 3.13.7 重建 `flutter_tools` 内核快照，见 `app/README.md`）。
+- [x] `app/` 脚手架、依赖 pin（prism_ui 0.1.2）、`analysis_options.yaml`、`.gitignore`。
+- [x] 深色 `tinted` 主题（种子 `#4CC2FF`）+ 中文字体回退；自绘 Glyph 图标集；标题栏 / 272px 侧栏 / 页面骨架 / 88px 播放栏；空壳可渲染。
+- [x] `flutter analyze` 无问题，2 项 widget 测试通过（侧栏导航切换、播放栏占位）。
+- [ ] 无边框窗口、拖动区、窗口按钮：`window_manager 0.6` 走 nativeapi 原生资产，测试与构建都需要 MSVC，暂缓到 M5。
+- [ ] Visual Studio 2022 C++ 桌面负载：未安装（需管理员），阻塞 `flutter run` / `flutter build windows`。
+- [ ] LICENSE：待定（GPL 方案）。
+
+原始 M0 任务（供对照）：
 
 - 安装 Flutter 3.47+ stable 与 VS2022 C++ 桌面负载；`flutter create --platforms=windows --project-name sonora app`。
 - 先确认构建架构：本机是 Windows on ARM64。Flutter 3.47 支持 Windows x64/Arm64 目标，但 ARM64 主机上构建 x64 应用有已知问题（[flutter/flutter#186730](https://github.com/flutter/flutter/issues/186730)）。M0 必须实测本机 `flutter run -d windows` 与 `flutter build windows --target-platform windows-arm64`，同时确认插件原生库（libmpv、smtc_windows 的 Rust 库）是否有 Arm64 产物；不可行则改为 x64 构建机或 CI 构建 x64 应用。
@@ -204,6 +216,6 @@ flowchart LR
 
 ## 12. 下一步
 
-1. M0：装 Flutter 3.47+ 与 VS2022 C++ 桌面负载，`flutter create app`，提交骨架。
-2. 补 `.gitignore` Flutter 项与 LICENSE，确认 GPL 合规方案。
+1. 安装 Visual Studio 2022 C++ 桌面负载（管理员），解锁 `flutter run -d windows` 与 `flutter build windows`。
+2. 首次真机运行空壳，核对窗口尺寸、侧栏宽度、行高与参考图（`docs/reference/`）；补无边框窗口（M5 提前）。
 3. M1：用 `media_kit` 播 FLAC/APE，验证 `audio-exclusive`、采样率跟随与 DSD，写 `docs/AUDIO_ENGINE.md`。
