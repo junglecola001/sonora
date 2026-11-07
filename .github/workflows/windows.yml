@@ -1,0 +1,86 @@
+name: Windows build
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: windows-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.47.9
+          channel: stable
+          cache: true
+
+      - name: Read app version
+        id: version
+        shell: pwsh
+        working-directory: ${{ github.workspace }}
+        run: |
+          $line = Select-String -Path app/pubspec.yaml -Pattern '^version:\s*(\S+)' | Select-Object -First 1
+          $version = $line.Matches[0].Groups[1].Value.Split('+')[0]
+          "app_version=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Test
+        run: flutter test
+
+      - name: Build Windows release
+        run: flutter build windows --release
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: choco install innosetup --no-progress -y
+
+      - name: Build installer
+        shell: pwsh
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" `
+            "/DAppVersion=${{ steps.version.outputs.app_version }}" `
+            "installer\sonora.iss"
+
+      - name: Build portable zip
+        shell: pwsh
+        run: |
+          Compress-Archive -Path "build\windows\x64\runner\Release\*" `
+            -DestinationPath "Sonora-${{ steps.version.outputs.app_version }}-x64-portable.zip"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sonora-windows-x64
+          path: |
+            app/installer/Output/*.exe
+            app/Sonora-*-portable.zip
+          if-no-files-found: error
+
+      - name: Attach to release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            app/installer/Output/*.exe
+            app/Sonora-*-portable.zip
+          fail_on_unmatched_files: true
